@@ -7,37 +7,42 @@ import java.util.HashSet;
 import javax.persistence.*;
 
 /**
- * Entity implementation class for Entity: Partie
- *
+ * 
+ * @author Dany CORBINEAU / Mathis AUBRY
+ * Is use to store player partie composed by many calcul
  */
 @Entity
+@Table(name = "partie")
 public class Partie implements Serializable {
-
-	
-	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	protected Long id;
 	
+	/**
+	 * All calculs
+	 */
 	@OneToMany
 	private Collection<Calcul> calculs;
-	
-	@OneToMany
-	private Collection<Response> responses;
 
+	/**
+	 * Init partie object
+	 */
 	public Partie() {
 		super();
-		this.calculs = new HashSet();
-		this.responses = new HashSet();
+		this.calculs = new HashSet<Calcul>();
 	}
 	
+	
+	/**
+	 * check all calculs to calculate player score and send it 
+	 * @return player score
+	 */
 	public int getScore()
 	{
 		int score = 0;
-		System.out.println(this.calculs.toArray().length+" "+ this.responses.toArray().length);
 		for (int j=0; j<this.calculs.size(); ++j) {
-		    score += ((Calcul) this.calculs.toArray()[j]).isValid( ((Response)this.responses.toArray()[j]).getValue() )? 1 : 0;
+		    score += ((Calcul) this.calculs.toArray()[j]).isValid()? 1 : 0;
 		}
 		return score;
 	}
@@ -58,18 +63,4 @@ public class Partie implements Serializable {
 		this.calculs = calculs;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public Collection<Response> getResponses() {
-		return responses;
-	}
-
-	public void setResponses(Collection<Response> responses) {
-		this.responses = responses;
-	}
-	
-	
-   
 }

@@ -14,7 +14,9 @@
 					  value="jdbc:mysql://localhost:3306/java_calc?useSSL=false&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
 			<property name="javax.persistence.jdbc.user" value="root"/>
 			<property name="javax.persistence.jdbc.password" value=""/>
-			<property name="javax.persistence.jdbc.logging.level" value="SEVERE"/>
+			<property name="javax.persistence.jdbc.logging.level" value="FATAL"/>
+			<property name="log4j.logger.org.hibernate=info" value="ERROR"/>
+			<property name="org.hibernate.jpa.internal.util.LogHelper" value="NONE"/>
 
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 			<property name="hibernate.use_sql_comments" value="false"/>

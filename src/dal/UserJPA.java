@@ -8,15 +8,25 @@ import javax.persistence.EntityManager;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import model.User;
-
+/**
+ * 
+ * @author Dany CORBINEAU / Mathis AUBRY
+ * User JAp is use to find a player by is name and get all player ordered by max score
+ */
 public class UserJPA extends DAOJPA<User,Long>{
 	
 	public UserJPA() {
 		super();
 	}
 	
+	/**
+	 * find a player by is name. if not : return null
+	 * @param u the user object with a name set
+	 * @return a user if is find
+	 */
 	public User findByName(User u)
 	{
 		EntityManager em = emf.createEntityManager();
@@ -39,5 +49,19 @@ public class UserJPA extends DAOJPA<User,Long>{
 		sess.close();
 		em.close();
 		return userToReturn;
+	}
+	
+	/**
+	 * get all player but order by max score
+	 * @return
+	 */
+	public List<User> getClassement()
+	{
+		String hql = "FROM User u ORDER BY u.maxScore DESC";
+		EntityManager em = emf.createEntityManager();
+		Session sess = em.unwrap(Session.class);
+		Query<User> query = sess.createQuery(hql);
+		
+		return query.getResultList();
 	}
 }

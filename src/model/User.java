@@ -2,30 +2,60 @@ package model;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
- * Entity implementation class for Entity: User
- *
+ * 
+ * @author Dany CORBINEAU / Mathis AUBRY
+ * use to store player informations 
  */
 @Entity
+@Table(name = "user")
 public class User implements Serializable {
-
-	
-	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	protected Long id;
 	
+	/**
+	 * Is pseudo (player cant have a same pseudo)
+	 */ 
 	private String pseudo;
 	
-	@OneToMany
+	/**
+	 * The player max score to find it easely
+	 */
+	private int maxScore;
+	
+	/**
+	 * All player parties (Lazy loading beacause the player is load after is pseudo is enter so instead of load many-many data it load at call)
+	 */
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Collection<Partie> parties;
 
+	
+	public int getMaxScore() {
+		return maxScore;
+	}
+
+	public void setMaxScore(int maxScore) {
+		this.maxScore = maxScore;
+	}
+	
+	
 	public User() {
 		super();
+		this.maxScore = 0;
+		this.parties = new HashSet<Partie>();
 	}
 
 	public Long getId() {
@@ -51,11 +81,6 @@ public class User implements Serializable {
 	public void setParties(Collection<Partie> parties) {
 		this.parties = parties;
 	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
 	
    
 }

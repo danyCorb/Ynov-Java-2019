@@ -7,7 +7,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+/**
+ * A DAO using Persistence instead of Spring repo because spring if a gauze factory 
+ * @author Dany CORBINEAU / Mathis AUBRY
+ *
+ * @param <T>
+ * @param <ID>
+ */
 public class DAOJPA<T, ID> implements IDAO<T, ID> {
+	/**
+	 * Entity manager and the Unit name
+	 */
 	private static final String P_UNIT = "dcma-jpa";
 	EntityManagerFactory emf;
 	public DAOJPA() {
@@ -32,15 +42,4 @@ public class DAOJPA<T, ID> implements IDAO<T, ID> {
 		em.close();
 	}
 
-	@Override
-	public Set<T> findAll() throws SQLException {
-		return null;
-	}
-
-	@Override
-	public T findById( ID id ) {
-		EntityManager em = emf.createEntityManager();
-		///T entity = em.find( , id );
-		return null;
-	}
 }

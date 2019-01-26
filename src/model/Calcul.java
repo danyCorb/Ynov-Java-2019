@@ -1,67 +1,109 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
 
-import javax.persistence.*;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-import metier.CalculGenerator;
 
 /**
- * Entity implementation class for Entity: Calcul
- *
+ * 
+ * @author Dany CORBINEAU / Mathis AUBRY
+ * A calcul is composed by responses and operations
  */
 @Entity
 @Table(name = "calcul")
 public class Calcul implements Serializable {
-
-	
-	private static final long serialVersionUID = 1L;
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	protected Long id;
 	
-	protected String calculString;
+	/**
+	 * Player response
+	 */
+	@OneToOne
+	protected Response response;
+	
+	/**
+	 * Calcul operations
+	 */
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Collection<Operation> operations;
 
+	
+	/**
+	 * Init all Collection and generate new Operations
+	 */
 	public Calcul() {
 		super();
-		this.calculString = CalculGenerator.getCalculGenerator().createCalc();
+		this.operations = new HashSet<>();
+		
+		int nbOperation = (new Random()).nextInt(2)+2;
+		for(int j=0;j<nbOperation;++j) {
+			Operation op = new Operation();
+			op.generate(-20, 50);
+			operations.add(op);
+		}
 	}
 	
+	/**
+	 * Get all operations string and concat it to make a calul string
+	 */
 	public String toString()
 	{
-		return this.calculString;
+		String returnString ="";
+		for(int j=0 ; j<this.operations.size();++j) {
+			returnString+=" ( "+((Operation)this.operations.toArray()[j]).toString()+" ) ";
+			if(j<this.operations.size()-1) {
+				returnString+=" + ";
+			}
+		}
+		return returnString;
 	}
 	
-	public boolean isValid(int result)
+	/**
+	 * Test if the response is correct
+	 * @return false or true according to the test
+	 */
+	public boolean isValid()
 	{
-		ScriptEngineManager manager = new ScriptEngineManager();
-		ScriptEngine engine = manager.getEngineByName("js");
-		try {
-			Object result1 = engine.eval(this.calculString);
-			if(result1.toString().compareTo(String.valueOf(result))==0)
-			{
-				return true;
-			}
-		} catch (ScriptException e) {
-			return false;
+		if(this.calculate() == response.getValue())
+		{
+			return true;
 		}
 		return false;
 	}
-	public String getValue()
+
+	/**
+	 * Send the calcul value
+	 * @return final value
+	 */
+	public int getValue()
 	{
-		ScriptEngineManager manager = new ScriptEngineManager();
-		ScriptEngine engine = manager.getEngineByName("js");
-		try {
-			Object result1 = engine.eval(this.calculString);
-			return result1.toString();
-		} catch (ScriptException e) {
-			return "";
+		return this.calculate();
+	}
+	
+	/**
+	 * Add all operator value to calculate the final result
+	 * @return int , the final result
+	 */
+	private int calculate()
+	{
+		int value = 0;
+		for(int j=0 ; j<this.operations.size();++j) {
+			value+=((Operation)this.operations.toArray()[j]).calculate();
 		}
+		return value;
 	}
 
 	public Long getId() {
@@ -72,17 +114,21 @@ public class Calcul implements Serializable {
 		this.id = id;
 	}
 
-	public String getCalculString() {
-		return calculString;
+	public Collection<Operation> getOperations() {
+		return operations;
 	}
 
-	public void setCalculString(String calculString) {
-		this.calculString = calculString;
+	public void setOperations(Collection<Operation> operations) {
+		this.operations = operations;
+	}
+	public Response getResponse() {
+		return response;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public void setResponse(Response response) {
+		this.response = response;
 	}
+
 	
 	
    
